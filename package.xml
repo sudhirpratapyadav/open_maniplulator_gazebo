@@ -3,8 +3,8 @@
 <package format="3">
   <name>open_manipulator_gazebo</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="yadav.1@iitj.ac.in">sudhir</maintainer>
+  <description>Gazebo Simulation of Open manipulator arm in ROS2</description>
+  <maintainer email="sudhirpratapyadav@gmail.com">Sudhir Pratap Yadav</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
