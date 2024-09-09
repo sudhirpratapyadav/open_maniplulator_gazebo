@@ -70,8 +70,13 @@ def generate_launch_description():
                 on_exit=[load_joint_trajectory_controller],
             )
         ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_trajectory_controller,
+                on_exit=[rviz],
+            )
+        ),
         gazebo,
         robot_state_publisher,
         spawn_entity,
-        rviz,
     ])
