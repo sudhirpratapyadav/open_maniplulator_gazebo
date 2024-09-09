@@ -10,29 +10,40 @@ import xacro
 def generate_launch_description():
     gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
-             )
+                    get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),)
 
     xacro_file = os.path.join(get_package_share_directory('open_manipulator_gazebo'),
                               'urdf',
                               'open_manipulator_x.urdf.xacro')
+    
+    rviz_config = os.path.join(get_package_share_directory("open_manipulator_x_description"),
+                               "rviz",
+                               "open_manipulator_x.rviz")
 
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
-    params = {'robot_description': doc.toxml(),
-              'use_sim_time': True}
 
-    node_robot_state_publisher = Node(
+    robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
-        parameters=[params]
+        parameters=[{'robot_description': doc.toxml(),
+              'use_sim_time': True}]
+    )
+
+    rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        arguments=['-d', rviz_config],
+        output='screen'
     )
 
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
                         arguments=['-topic', 'robot_description',
                                    '-entity', 'omx'],
-                        output='screen')
+                        output='screen'
+    )
 
     load_joint_state_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
@@ -60,6 +71,7 @@ def generate_launch_description():
             )
         ),
         gazebo,
-        node_robot_state_publisher,
+        robot_state_publisher,
         spawn_entity,
+        rviz,
     ])
